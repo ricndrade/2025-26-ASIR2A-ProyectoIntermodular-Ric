@@ -1,21 +1,18 @@
 <?php
+define('DB_HOST', 'db');
+define('DB_NAME', 'museo');
+define('DB_USER', 'museo_user');
+define('DB_PASS', 'museo_pass');
 
-$host = 'db';
-$dbname = 'museo';
-$user = 'museo_user';
-$pass = 'museo_pass';
-
-try {
-    $pdo = new PDO(
-        "mysql:host=$host;dbname=$dbname;charset=utf8",
-        $user,
-        $pass
-    );
-
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    echo "<br>";
-    echo "Conexión correcta";
-
-} catch (PDOException $e) {
-    die("Error conexión: " . $e->getMessage());
+function getDB(): PDO {
+    static $pdo = null;
+    if ($pdo === null) {
+        $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
+        $pdo = new PDO($dsn, DB_USER, DB_PASS, [
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES   => false,
+        ]);
+    }
+    return $pdo;
 }

@@ -19,6 +19,8 @@ class SettingsController {
 
         match($action) {
             'profile'       => $this->updateProfile(),
+            'upload_profile_image'  => $this->uploadProfileImage(),
+            'delete_profile_image'  => $this->deleteProfileImage(),
             'upload_photo'  => $this->uploadPhoto(),
             'delete_photo'  => $this->deletePhoto(),
             'delete_account'=> $this->deleteAccount(),
@@ -32,11 +34,18 @@ class SettingsController {
         $bio          = trim($_POST['bio']          ?? '');
         $errors       = [];
 
-        if (!preg_match('/^[a-zA-Z0-9_]{3,30}$/', $username)) {
+        $username = strtolower($username);
+        if (!preg_match('/^[a-z0-9_]{3,30}$/', $username)) {
             $errors[] = 'Usuario inválido (letras, números y _, 3-30 caracteres).';
         }
         if (empty($display_name)) {
             $errors[] = 'El nombre público no puede estar vacío.';
+        }
+
+        if (empty($display_name)) {
+        $errors[] = 'El nombre público no puede estar vacío.';
+        } elseif (strlen($display_name) > 100) {
+        $errors[] = 'El nombre público no puede superar 100 caracteres.';
         }
 
         if (empty($errors)) {
@@ -146,6 +155,71 @@ class SettingsController {
 
         session_destroy();
         header('Location: /register');
+        exit;
+    }
+
+    private function uploadProfileImage(): void
+    {
+        $file   = $_FILES['profile_image'] ?? null;
+        $errors = [];
+
+        if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
+            $errors[] = 'Error al subir la imagen.';
+        } else {
+            $allowed = ['image/jpeg', 'image/png', 'image/webp'];
+            $mime    = mime_content_type($file['tmp_name']);
+
+            if (!in_array($mime, $allowed)) {
+                $errors[] = 'Solo se permiten imágenes JPG, PNG o WEBP.';
+            }
+            if ($file['size'] > 2 * 1024 * 1024) {
+                $errors[] = 'La foto de perfil no puede superar 2MB.';
+            }
+        }
+
+        if (empty($errors)) {
+            $db   = getDB();
+            $stmt = $db->prepare("SELECT profile_image FROM users WHERE id = ?");
+            $stmt->execute([$_SESSION['user_id']]);
+            $old = $stmt->fetchColumn();
+
+            // Borrar la anterior si existe
+            if ($old) {
+                $oldFile = ROOT_PATH . '/public/uploads/' . $old;
+                if (file_exists($oldFile)) unlink($oldFile);
+            }
+
+            $ext      = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $filename = 'avatar_' . $_SESSION['user_id'] . '_' . uniqid() . '.' . strtolower($ext);
+            $dest     = ROOT_PATH . '/public/uploads/' . $filename;
+
+            if (move_uploaded_file($file['tmp_name'], $dest)) {
+                $stmt = $db->prepare("UPDATE users SET profile_image = ? WHERE id = ?");
+                $stmt->execute([$filename, $_SESSION['user_id']]);
+            }
+        }
+
+        if (!empty($errors)) $_SESSION['errors'] = $errors;
+        header('Location: /settings');
+        exit;
+    }
+
+    private function deleteProfileImage(): void
+    {
+        $db   = getDB();
+        $stmt = $db->prepare("SELECT profile_image FROM users WHERE id = ?");
+        $stmt->execute([$_SESSION['user_id']]);
+        $image = $stmt->fetchColumn();
+
+        if ($image) {
+            $file = ROOT_PATH . '/public/uploads/' . $image;
+            if (file_exists($file)) unlink($file);
+
+            $stmt = $db->prepare("UPDATE users SET profile_image = NULL WHERE id = ?");
+            $stmt->execute([$_SESSION['user_id']]);
+        }
+
+        header('Location: /settings');
         exit;
     }
 

@@ -1,23 +1,47 @@
 <!DOCTYPE html>
 <html lang="es">
-<?php if (!isset($user)) { $user = ['username' => '', 'id' => null, 'foto_perfil' => null]; } ?>
-<head><meta charset="UTF-8"><title><?= htmlspecialchars($user['username']) ?></title></head>
+<?php if (!isset($user)) {
+    $user = ['username' => '', 'id' => null, 'foto_perfil' => null];
+} ?>
+
+<head>
+    <meta charset="UTF-8">
+    <title><?= htmlspecialchars($user['username']) ?></title>
+</head>
+
 <body>
-    <?php if ($user['profile_image']): ?>
-        <img src="/uploads/<?= htmlspecialchars($user['profile_image']) ?>" width="100">
-    <?php endif ?>
+    <?php
+    // Avatar: foto propia o inicial del username como fallback
+    $avatar = $user['profile_image']
+        ? '/uploads/' . htmlspecialchars($user['profile_image'])
+        : null;
+    ?>
 
-    <h1><?= htmlspecialchars($user['display_name']) ?></h1>
-    <p style="color:gray">@<?= htmlspecialchars($user['username']) ?></p>
+    <div>
+        <?php if ($avatar): ?>
+            <img src="<?= $avatar ?>"
+                style="width:80px;height:80px;object-fit:cover;border-radius:50%;">
+        <?php else: ?>
+            <div style="width:80px;height:80px;border-radius:50%;background:#ccc;
+                    display:flex;align-items:center;justify-content:center;
+                    font-size:2rem;font-weight:bold;">
+                <?= strtoupper($user['username'][0]) ?>
+            </div>
+        <?php endif ?>
 
-    <?php if (!empty($user['bio'])): ?>
-        <p><?= htmlspecialchars($user['bio']) ?></p>
-    <?php endif ?>
+        <h1><?= htmlspecialchars($user['display_name']) ?></h1>
+        <p style="color:gray">@<?= htmlspecialchars($user['username']) ?></p>
 
-    <?php if (isLoggedIn() && $_SESSION['username'] === $user['username']): ?>
-        <a href="/settings">Editar perfil</a> |
-        <a href="/logout">Cerrar sesión</a>
-    <?php endif ?>
+        <?php if (!empty($user['bio'])): ?>
+            <p><?= nl2br(htmlspecialchars($user['bio'])) ?></p>
+        <?php endif ?>
+
+        <?php if (isLoggedIn() && $_SESSION['username'] === $user['username']): ?>
+            <a href="/upload">Subir foto</a> |
+            <a href="/settings">Editar perfil</a> |
+            <a href="/logout">Cerrar sesión</a>
+        <?php endif ?>
+    </div>
 
     <hr>
 
@@ -42,4 +66,5 @@
         </div>
     <?php endif ?>
 </body>
+
 </html>

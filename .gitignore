@@ -1,3 +1,2 @@
-# .gitignore
-src/public/uploads/*
-!src/public/uploads/.gitkeep
+# .gitignore (root)
+# remove uploads rules

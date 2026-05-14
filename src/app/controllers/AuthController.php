@@ -62,7 +62,8 @@ class AuthController {
         $password     = $_POST['password']          ?? '';
         $errors       = [];
 
-        if (!preg_match('/^[a-zA-Z0-9_]{3,30}$/', $username)) {
+        $username = strtolower($username);
+        if (!preg_match('/^[a-z0-9_]{3,30}$/', $username)) {
             $errors[] = 'El usuario solo puede tener letras, números y _ (3-30 caracteres).';
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {

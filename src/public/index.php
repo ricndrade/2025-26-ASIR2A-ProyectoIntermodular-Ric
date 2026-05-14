@@ -36,12 +36,14 @@ $routes = [
         '/logout'    => ['AuthController',    'logout'],
         '/settings'  => ['SettingsController','index'],
         '/search'    => ['SearchController',  'index'],
+        '/upload'    => ['UploadController', 'index'],
     ],
     'POST' => [
         '/login'     => ['AuthController',    'login'],
         '/register'  => ['AuthController',    'register'],
         '/settings'  => ['SettingsController','update'],
         '/foto/borrar'    => ['SettingsController','update'],  // reutiliza update con action=delete_photo
+        '/upload'    => ['UploadController', 'store'],
     ],
 ];
 

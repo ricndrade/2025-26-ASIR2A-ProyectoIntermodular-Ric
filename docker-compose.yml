@@ -25,6 +25,7 @@ services:
       - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
+      #- ./docker/db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
     restart: unless-stopped
     mem_limit: 256m
 

@@ -14,10 +14,10 @@ try {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Museo Digital</title>
+    <title>Galería</title>
 </head>
 <body>
-    <h1>Bienvenido al Museo</h1>
+    <h1>Bienvenido a la Galería</h1>
     <p style="color: <?= $color ?>">
         <?= htmlspecialchars($status) ?>
     </p>

@@ -41,14 +41,14 @@ $avatarText  = strtoupper(substr($username, 0, 1) ?: '?');
         <?php else: ?>
             <div class="profile-photo-grid">
                 <?php foreach ($fotos as $foto): ?>
-                    <figure class="profile-photo-card">
+                    <a href="/photo/<?= (int) $foto['id'] ?>" class="profile-photo-card">
                         <img
                             class="profile-photo"
                             src="/uploads/<?= rawurlencode((string) $foto['image_path']) ?>"
                             alt="Foto publicada por <?= htmlspecialchars($displayName) ?>"
                             loading="lazy"
                         >
-                    </figure>
+                    </a>
                 <?php endforeach ?>
             </div>
         <?php endif ?>

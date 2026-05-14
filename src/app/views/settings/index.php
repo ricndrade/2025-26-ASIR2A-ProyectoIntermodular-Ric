@@ -1,5 +1,6 @@
 <?php
 /** @var array $user */
+/** @var string $csrfToken */
 $avatarUrl = !empty($user['profile_image']) ? '/uploads/' . rawurlencode((string) $user['profile_image']) : null;
 $avatarText = htmlspecialchars(strtoupper(substr((string) ($user['username'] ?? ''), 0, 1) ?: '?'));
 

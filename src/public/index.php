@@ -33,6 +33,13 @@ if (preg_match('#^/u/([a-zA-Z0-9_]+)$#', $uri, $matches)) {
     exit;
 }
 
+// Rutas dinámicas /photo/{id}
+if (preg_match('#^/photo/(\d+)$#', $uri, $matches)) {
+    $controller = new PhotoController();
+    $controller->show((int) $matches[1]);
+    exit;
+}
+
 $routes = [
     'GET' => [
         '/'          => ['HomeController',    'index'],
@@ -62,5 +69,5 @@ if ($route) {
     $controller->$action();
 } else {
     http_response_code(404);
-    echo "404 - Página no encontrada";
+    require ROOT_PATH . '/app/views/errors/error404.php';
 }

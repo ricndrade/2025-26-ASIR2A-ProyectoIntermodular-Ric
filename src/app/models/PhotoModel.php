@@ -49,4 +49,12 @@ class PhotoModel extends BaseModel
             $stmt->fetchAll()
         );
     }
+
+    public function findById(int $photoId): ?array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM photos WHERE id = ? LIMIT 1');
+        $stmt->execute([$photoId]);
+
+        return $stmt->fetch() ?: null;
+    }
 }

@@ -1,32 +1,51 @@
-USE museo;
+-- Adminer 5.4.2 MariaDB 11.8.6-MariaDB-ubu2404 dump
 
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(30) NOT NULL UNIQUE,
-    display_name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    profile_image VARCHAR(255) DEFAULT NULL,
-    bio VARCHAR(160) DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+SET NAMES utf8;
+SET time_zone = '+00:00';
+SET foreign_key_checks = 0;
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
-CREATE TABLE photos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    caption VARCHAR(220) DEFAULT NULL,
-    image_path VARCHAR(255) NOT NULL,
-    is_public TINYINT(1) DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_photos_user
-        FOREIGN KEY (user_id) REFERENCES users(id)
-        ON DELETE CASCADE
-);
+SET NAMES utf8mb4;
 
--- Admin inicial (password: admin123)
-INSERT IGNORE INTO users (username, email, password_hash, display_name)
-VALUES ('Admin', 'admin@museo.local',
-        '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
-        'admin');
+DROP DATABASE IF EXISTS `museo`;
+CREATE DATABASE `museo` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_uca1400_ai_ci */;
+USE `museo`;
+
+DROP TABLE IF EXISTS `photos`;
+CREATE TABLE `photos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `caption` varchar(220) DEFAULT NULL,
+  `image_path` varchar(255) NOT NULL,
+  `is_public` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `fk_photos_user` (`user_id`),
+  CONSTRAINT `fk_photos_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+INSERT INTO `photos` (`id`, `user_id`, `caption`, `image_path`, `is_public`, `created_at`, `updated_at`) VALUES
+(5,	3,	'aoty',	'photo_6a0526f8a5dc90.28895362.webp',	1,	'2026-05-14 01:35:52',	'2026-05-14 01:35:52');
+
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(30) NOT NULL,
+  `display_name` varchar(100) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `profile_image` varchar(255) DEFAULT NULL,
+  `bio` varchar(160) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+INSERT INTO `users` (`id`, `username`, `display_name`, `email`, `password_hash`, `profile_image`, `bio`, `created_at`, `updated_at`) VALUES
+(1,	'Admin',	'admin',	'admin@museo.local',	'$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',	NULL,	NULL,	'2026-05-14 00:33:56',	'2026-05-14 00:33:56'),
+(3,	'ric',	'Ricardo',	'ric@example.com',	'$2y$10$248dGFMQ1R7EoeDFhJery.Vm0o32Ng1HRJsvDAD0UdQ1KPabCQzCu',	NULL,	'hola',	'2026-05-14 01:35:31',	'2026-05-14 01:36:15');
+
+-- 2026-05-14 01:37:03 UTC

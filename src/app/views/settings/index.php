@@ -1,17 +1,5 @@
 <?php
 /** @var array $user */
-$errors = $_SESSION['errors'] ?? [];
-unset($_SESSION['errors']);
-
-$pageTitle = 'Configuracion';
-$galleryHref = '/u/' . $_SESSION['username'];
-$headerActions = [
-    ['href' => '/upload', 'label' => 'Subir foto', 'icon' => 'upload', 'visible' => true],
-    ['href' => '/settings', 'label' => 'Editar perfil', 'icon' => 'settings', 'visible' => true],
-    ['href' => '/search', 'label' => 'Buscar', 'icon' => 'search', 'visible' => true],
-    ['href' => '/logout', 'label' => 'Cerrar sesion', 'icon' => 'logout', 'visible' => true],
-];
-
 $avatarUrl = !empty($user['profile_image']) ? '/uploads/' . rawurlencode((string) $user['profile_image']) : null;
 $avatarText = htmlspecialchars(strtoupper(substr((string) ($user['username'] ?? ''), 0, 1) ?: '?'));
 
@@ -33,7 +21,7 @@ require dirname(__DIR__) . '/partials/header.php';
         </div>
 
         <form class="form-stack" method="POST" action="/settings">
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
             <input type="hidden" name="action" value="profile">
 
             <label class="field-group">
@@ -69,7 +57,7 @@ require dirname(__DIR__) . '/partials/header.php';
 
             <?php if ($avatarUrl): ?>
                 <form method="POST" action="/settings">
-                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
                     <input type="hidden" name="action" value="delete_profile_image">
                     <button class="button button-secondary" type="submit">Eliminar foto de perfil</button>
                 </form>
@@ -77,7 +65,7 @@ require dirname(__DIR__) . '/partials/header.php';
         </div>
 
         <form class="form-stack" method="POST" action="/settings" enctype="multipart/form-data">
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
             <input type="hidden" name="action" value="upload_profile_image">
 
             <label class="field-group">
@@ -96,7 +84,7 @@ require dirname(__DIR__) . '/partials/header.php';
         </div>
 
         <form method="POST" action="/settings" onsubmit="return confirm('Seguro? Esta accion no se puede deshacer.')">
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
             <input type="hidden" name="action" value="delete_account">
             <button class="button button-danger" type="submit">Eliminar mi cuenta</button>
         </form>

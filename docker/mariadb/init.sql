@@ -23,10 +23,11 @@ CREATE TABLE `photos` (
   PRIMARY KEY (`id`),
   KEY `fk_photos_user` (`user_id`),
   CONSTRAINT `fk_photos_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 INSERT INTO `photos` (`id`, `user_id`, `caption`, `image_path`, `is_public`, `created_at`, `updated_at`) VALUES
-(5,	3,	'aoty',	'photo_6a0526f8a5dc90.28895362.webp',	1,	'2026-05-14 01:35:52',	'2026-05-14 01:35:52');
+(12,	3,	'escultura',	'photo_6a05a4106676f8.12260298.webp',	1,	'2026-05-14 10:29:36',	'2026-05-14 12:05:07'),
+(13,	3,	'hola',	'photo_6a05a415cb1990.88580965.webp',	1,	'2026-05-14 10:29:41',	'2026-05-14 12:05:04');
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
@@ -45,7 +46,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 INSERT INTO `users` (`id`, `username`, `display_name`, `email`, `password_hash`, `profile_image`, `bio`, `created_at`, `updated_at`) VALUES
-(1,	'Admin',	'admin',	'admin@museo.local',	'$2y$10$7Uqj8L0VY08NP2s6KGudPOMY1FGxQWUEAW6aQXuX/LvfG/NaFxzf6',	NULL,	NULL,	'2026-05-14 00:33:56',	'2026-05-14 00:33:56'),
-(2,	'ric',	'Ricardo',	'ric@example.com',	'$2y$10$248dGFMQ1R7EoeDFhJery.Vm0o32Ng1HRJsvDAD0UdQ1KPabCQzCu',	NULL,	'hola',	'2026-05-14 01:35:31',	'2026-05-14 01:36:15');
+(1,	'admin',	'Admin',	'admin@museo.local',	'$2y$10$7Uqj8L0VY08NP2s6KGudPOMY1FGxQWUEAW6aQXuX/LvfG/NaFxzf6',	NULL,	'',	'2026-05-14 00:33:56',	'2026-05-14 06:25:03'),
+(3,	'ric',	'Ricardo',	'ric@example.com',	'$2y$10$248dGFMQ1R7EoeDFhJery.Vm0o32Ng1HRJsvDAD0UdQ1KPabCQzCu',	'avatar_3_6a05a9bca65ea.png',	'esto no es una biografía.',	'2026-05-14 01:35:31',	'2026-05-14 11:58:22');
 
--- 2026-05-14 01:37:03 UTC
+-- 2026-05-14 12:14:18 UTC

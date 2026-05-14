@@ -6,8 +6,13 @@ require_once ROOT_PATH . '/config/database.php';
 
 // Autoloader
 spl_autoload_register(function ($class) {
-    $file = ROOT_PATH . '/app/Controllers/' . $class . '.php';
-    if (file_exists($file)) require_once $file;
+    foreach (['/app/controllers/', '/app/models/', '/core/'] as $directory) {
+        $file = ROOT_PATH . $directory . $class . '.php';
+        if (file_exists($file)) {
+            require_once $file;
+            return;
+        }
+    }
 });
 
 require_once ROOT_PATH . '/core/Auth.php';

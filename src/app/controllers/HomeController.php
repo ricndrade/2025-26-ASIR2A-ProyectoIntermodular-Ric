@@ -1,11 +1,11 @@
 <?php
-class HomeController {
+class HomeController extends Controller
+{
     public function index(): void {
-        if (isLoggedIn()) {
-            header('Location: /u/' . $_SESSION['username']);
-        } else {
-            header('Location: /login');
+        if ($this->isAuthenticated()) {
+            $this->redirect('/u/' . $this->currentUsername());
         }
-        exit;
+
+        $this->redirect('/login');
     }
 }

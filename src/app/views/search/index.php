@@ -1,21 +1,4 @@
 <?php
-$isLoggedIn = isLoggedIn();
-$pageTitle = 'Buscar';
-$galleryHref = $isLoggedIn ? '/u/' . $_SESSION['username'] : '/login';
-$headerActions = $isLoggedIn
-    ? [
-        ['href' => '/upload', 'label' => 'Subir foto', 'icon' => 'upload', 'visible' => true],
-        ['href' => '/settings', 'label' => 'Editar perfil', 'icon' => 'settings', 'visible' => true],
-        ['href' => '/search', 'label' => 'Buscar', 'icon' => 'search', 'visible' => true],
-        ['href' => '/logout', 'label' => 'Cerrar sesion', 'icon' => 'logout', 'visible' => true],
-    ]
-    : [
-        ['href' => '/search', 'label' => 'Buscar', 'icon' => 'search', 'visible' => true],
-        ['href' => '/login', 'label' => 'Perfil o iniciar sesion', 'icon' => 'profile', 'visible' => true],
-    ];
-
-$query = trim((string) ($_GET['q'] ?? ''));
-
 require dirname(__DIR__) . '/partials/header.php';
 ?>
 <main class="page-main">

@@ -1,14 +1,4 @@
 <?php
-$errors = $_SESSION['errors'] ?? [];
-$old    = $_SESSION['old'] ?? [];
-unset($_SESSION['errors'], $_SESSION['old']);
-
-$pageTitle = 'Registro';
-$galleryHref = '/login';
-$headerActions = [
-    ['href' => '/login', 'label' => 'Iniciar sesion', 'icon' => 'login', 'visible' => true],
-];
-
 require dirname(__DIR__) . '/partials/header.php';
 ?>
 <main class="page-main page-main-auth">
@@ -27,7 +17,7 @@ require dirname(__DIR__) . '/partials/header.php';
         <?php endif ?>
 
         <form class="form-stack" method="POST" action="/register">
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
 
             <label class="field-group">
                 <span class="field-label">Usuario</span>
@@ -35,7 +25,7 @@ require dirname(__DIR__) . '/partials/header.php';
                     class="text-input"
                     type="text"
                     name="username"
-                    value="<?= htmlspecialchars($old['username'] ?? '') ?>"
+                    value="<?= htmlspecialchars((string) ($old['username'] ?? '')) ?>"
                     required
                 >
             </label>
@@ -46,7 +36,7 @@ require dirname(__DIR__) . '/partials/header.php';
                     class="text-input"
                     type="email"
                     name="email"
-                    value="<?= htmlspecialchars($old['email'] ?? '') ?>"
+                    value="<?= htmlspecialchars((string) ($old['email'] ?? '')) ?>"
                     required
                 >
             </label>

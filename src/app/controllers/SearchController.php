@@ -1,28 +1,24 @@
 <?php
-class SearchController {
+class SearchController extends Controller
+{
+    private UserModel $users;
 
-    public function index(): void {
-        $query   = trim($_GET['q'] ?? '');
-        $results = [];
+    public function __construct()
+    {
+        $this->users = new UserModel();
+    }
 
-        if ($query !== '') {
-            $db   = getDB();
-            $stmt = $db->prepare("
-                SELECT u.id, u.username, u.display_name, u.profile_image,
-                       COUNT(p.id) AS total_fotos
-                FROM users u
-                LEFT JOIN photos p ON p.user_id = u.id
-                WHERE u.username LIKE ?
-                   OR u.display_name LIKE ?
-                GROUP BY u.id
-                ORDER BY u.username ASC
-                LIMIT 20
-            ");
-            $like = '%' . $query . '%';
-            $stmt->execute([$like, $like]);
-            $results = $stmt->fetchAll();
-        }
+    public function index(): void
+    {
+        $query = trim((string) ($_GET['q'] ?? ''));
+        $results = $query !== '' ? $this->users->searchWithPhotoCounts($query) : [];
+        $shell = $this->isAuthenticated()
+            ? $this->buildMemberShell('Buscar')
+            : $this->buildGuestShell('Buscar');
 
-        require ROOT_PATH . '/app/views/search/index.php';
+        $this->render('search/index', $shell + [
+            'query' => $query,
+            'results' => $results,
+        ]);
     }
 }

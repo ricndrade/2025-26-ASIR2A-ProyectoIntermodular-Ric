@@ -1,24 +1,4 @@
 <?php
-requireLogin();
-$errors = $_SESSION['errors'] ?? [];
-unset($_SESSION['errors']);
-
-$db   = getDB();
-$stmt = $db->prepare(
-    "SELECT * FROM photos WHERE user_id = ? ORDER BY created_at DESC"
-);
-$stmt->execute([$_SESSION['user_id']]);
-$fotos = $stmt->fetchAll();
-
-$pageTitle = 'Subir foto';
-$galleryHref = '/u/' . $_SESSION['username'];
-$headerActions = [
-    ['href' => '/upload', 'label' => 'Subir foto', 'icon' => 'upload', 'visible' => true],
-    ['href' => '/settings', 'label' => 'Editar perfil', 'icon' => 'settings', 'visible' => true],
-    ['href' => '/search', 'label' => 'Buscar', 'icon' => 'search', 'visible' => true],
-    ['href' => '/logout', 'label' => 'Cerrar sesion', 'icon' => 'logout', 'visible' => true],
-];
-
 require dirname(__DIR__) . '/partials/header.php';
 ?>
 <main class="page-main">
@@ -37,7 +17,7 @@ require dirname(__DIR__) . '/partials/header.php';
         <?php endif ?>
 
         <form class="form-stack" method="POST" action="/upload" enctype="multipart/form-data">
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
 
             <label class="field-group">
                 <span class="field-label">Imagen</span>
@@ -72,7 +52,7 @@ require dirname(__DIR__) . '/partials/header.php';
 
                         <div class="upload-copy">
                             <form class="form-inline" method="POST" action="/foto/editar">
-                                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
                                 <input type="hidden" name="photo_id" value="<?= (int) $foto['id'] ?>">
                                 <input
                                     class="text-input"
@@ -89,7 +69,7 @@ require dirname(__DIR__) . '/partials/header.php';
                         </div>
 
                         <form method="POST" action="/foto/borrar" onsubmit="return confirm('Eliminar esta foto?')">
-                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
                             <input type="hidden" name="photo_id" value="<?= (int) $foto['id'] ?>">
                             <button class="button button-danger" type="submit">Eliminar</button>
                         </form>

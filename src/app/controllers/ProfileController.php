@@ -1,38 +1,35 @@
 <?php
-class ProfileController {
+class ProfileController extends Controller
+{
+    private UserModel $users;
+    private PhotoModel $photos;
 
-    public function show(string $username): void {
-        $db   = getDB();
-        $stmt = $db->prepare("SELECT * FROM users WHERE username = ? LIMIT 1");
-        $stmt->execute([$username]);
-        $user = $stmt->fetch();
+    public function __construct()
+    {
+        $this->users = new UserModel();
+        $this->photos = new PhotoModel();
+    }
 
+    public function show(string $username): void
+    {
+        $user = $this->users->findByUsername($username);
         if (!$user) {
             http_response_code(404);
-            echo "Usuario no encontrado.";
+            echo 'Usuario no encontrado.';
             return;
         }
 
-        $stmt = $db->prepare("SELECT * FROM photos WHERE user_id = ? ORDER BY created_at DESC");
-        $stmt->execute([$user['id']]);
-        $fotos = $stmt->fetchAll();
+        $pageTitle = trim((string) ($user['display_name'] ?? '')) ?: (string) $user['username'];
+        $isLoggedIn = $this->isAuthenticated();
+        $shell = $isLoggedIn
+            ? $this->buildMemberShell($pageTitle)
+            : $this->buildGuestShell($pageTitle);
 
-        $isLoggedIn = isLoggedIn();
-        $isOwner    = $isLoggedIn && $_SESSION['username'] === $user['username'];
-        $pageTitle  = $user['display_name'] ?: $user['username'];
-        $galleryHref = $isLoggedIn ? '/u/' . $_SESSION['username'] : '/login';
-        $headerActions = $isLoggedIn
-            ? [
-                ['href' => '/upload', 'label' => 'Subir foto', 'icon' => 'upload', 'visible' => true],
-                ['href' => '/settings', 'label' => 'Editar perfil', 'icon' => 'settings', 'visible' => true],
-                ['href' => '/search', 'label' => 'Buscar', 'icon' => 'search', 'visible' => true],
-                ['href' => '/logout', 'label' => 'Cerrar sesion', 'icon' => 'logout', 'visible' => true],
-            ]
-            : [
-                ['href' => '/search', 'label' => 'Buscar', 'icon' => 'search', 'visible' => true],
-                ['href' => '/login', 'label' => 'Perfil o iniciar sesion', 'icon' => 'profile', 'visible' => true],
-            ];
-
-        require ROOT_PATH . '/app/views/profile/show.php';
+        $this->render('profile/show', $shell + [
+            'user' => $user,
+            'fotos' => $this->photos->findByUserId((int) $user['id']),
+            'isLoggedIn' => $isLoggedIn,
+            'isOwner' => $isLoggedIn && $this->currentUsername() === $user['username'],
+        ]);
     }
 }

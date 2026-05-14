@@ -50,6 +50,46 @@ class UploadController {
         exit;
     }
 
+    public function destroy(): void {
+        requireLogin();
+        $this->checkCsrf();
+
+        $photo_id = (int)($_POST['photo_id'] ?? 0);
+        $db       = getDB();
+
+        $stmt = $db->prepare("SELECT * FROM photos WHERE id = ? AND user_id = ? LIMIT 1");
+        $stmt->execute([$photo_id, $_SESSION['user_id']]);
+        $photo = $stmt->fetch();
+
+        if ($photo) {
+            $file = ROOT_PATH . '/public/uploads/' . $photo['image_path'];
+            if (file_exists($file)) unlink($file);
+
+            $stmt = $db->prepare("DELETE FROM photos WHERE id = ?");
+            $stmt->execute([$photo_id]);
+        }
+
+        header('Location: /upload');
+        exit;
+    }
+
+    public function editCaption(): void {
+        requireLogin();
+        $this->checkCsrf();
+
+        $photo_id = (int)($_POST['photo_id'] ?? 0);
+        $caption  = trim($_POST['caption']   ?? '');
+
+        $db   = getDB();
+        $stmt = $db->prepare(
+            "UPDATE photos SET caption = ? WHERE id = ? AND user_id = ?"
+        );
+        $stmt->execute([$caption, $photo_id, $_SESSION['user_id']]);
+
+        header('Location: /upload');
+        exit;
+    }
+
     private function checkCsrf(): void {
         if (empty($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
             http_response_code(403);
@@ -57,3 +97,4 @@ class UploadController {
         }
     }
 }
+

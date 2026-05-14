@@ -1,36 +1,65 @@
 <?php
 $errors = $_SESSION['errors'] ?? [];
-$old    = $_SESSION['old']    ?? [];
+$old    = $_SESSION['old'] ?? [];
 unset($_SESSION['errors'], $_SESSION['old']);
+
+$pageTitle = 'Registro';
+$galleryHref = '/login';
+$headerActions = [
+    ['href' => '/login', 'label' => 'Iniciar sesion', 'icon' => 'login', 'visible' => true],
+];
+
+require dirname(__DIR__) . '/partials/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head><meta charset="UTF-8"><title>Registro</title></head>
-<body>
-    <h1>Crear cuenta</h1>
+<main class="page-main page-main-auth">
+    <section class="surface-card surface-card-narrow">
+        <div class="surface-head">
+            <h1 class="surface-title">Crear cuenta</h1>
+            <p class="surface-copy">Registra tu usuario y entra directo a tu galeria.</p>
+        </div>
 
-    <?php foreach ($errors as $e): ?>
-        <p style="color:red"><?= htmlspecialchars($e) ?></p>
-    <?php endforeach ?>
+        <?php if (!empty($errors)): ?>
+            <div class="alert-stack">
+                <?php foreach ($errors as $error): ?>
+                    <p class="alert-message alert-message-error"><?= htmlspecialchars($error) ?></p>
+                <?php endforeach ?>
+            </div>
+        <?php endif ?>
 
-    <form method="POST" action="/register">
-        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+        <form class="form-stack" method="POST" action="/register">
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
 
-        <label>Usuario<br>
-            <input type="text" name="username" value="<?= htmlspecialchars($old['username'] ?? '') ?>" required>
-        </label><br><br>
+            <label class="field-group">
+                <span class="field-label">Usuario</span>
+                <input
+                    class="text-input"
+                    type="text"
+                    name="username"
+                    value="<?= htmlspecialchars($old['username'] ?? '') ?>"
+                    required
+                >
+            </label>
 
-        <label>Email<br>
-            <input type="email" name="email" value="<?= htmlspecialchars($old['email'] ?? '') ?>" required>
-        </label><br><br>
+            <label class="field-group">
+                <span class="field-label">Email</span>
+                <input
+                    class="text-input"
+                    type="email"
+                    name="email"
+                    value="<?= htmlspecialchars($old['email'] ?? '') ?>"
+                    required
+                >
+            </label>
 
-        <label>Contraseña (mín. 8 caracteres)<br>
-            <input type="password" name="password" required>
-        </label><br><br>
+            <label class="field-group">
+                <span class="field-label">Contrasena</span>
+                <input class="text-input" type="password" name="password" required>
+            </label>
 
-        <button type="submit">Registrarse</button>
-    </form>
+            <button class="button button-primary" type="submit">Registrarse</button>
+        </form>
 
-    <p>¿Ya tienes cuenta? <a href="/login">Inicia sesión</a></p>
-</body>
-</html>
+        <p class="inline-note">Ya tienes cuenta? <a class="inline-link" href="/login">Inicia sesion</a></p>
+    </section>
+</main>
+<?php require dirname(__DIR__) . '/partials/footer.php'; ?>

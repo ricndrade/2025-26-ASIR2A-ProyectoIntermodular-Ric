@@ -17,6 +17,22 @@ class ProfileController {
         $stmt->execute([$user['id']]);
         $fotos = $stmt->fetchAll();
 
+        $isLoggedIn = isLoggedIn();
+        $isOwner    = $isLoggedIn && $_SESSION['username'] === $user['username'];
+        $pageTitle  = $user['display_name'] ?: $user['username'];
+        $galleryHref = $isLoggedIn ? '/u/' . $_SESSION['username'] : '/login';
+        $headerActions = $isLoggedIn
+            ? [
+                ['href' => '/upload', 'label' => 'Subir foto', 'icon' => 'upload', 'visible' => true],
+                ['href' => '/settings', 'label' => 'Editar perfil', 'icon' => 'settings', 'visible' => true],
+                ['href' => '/search', 'label' => 'Buscar', 'icon' => 'search', 'visible' => true],
+                ['href' => '/logout', 'label' => 'Cerrar sesion', 'icon' => 'logout', 'visible' => true],
+            ]
+            : [
+                ['href' => '/search', 'label' => 'Buscar', 'icon' => 'search', 'visible' => true],
+                ['href' => '/login', 'label' => 'Perfil o iniciar sesion', 'icon' => 'profile', 'visible' => true],
+            ];
+
         require ROOT_PATH . '/app/views/profile/show.php';
     }
 }

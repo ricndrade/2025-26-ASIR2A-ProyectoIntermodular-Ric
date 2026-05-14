@@ -2,77 +2,104 @@
 /** @var array $user */
 $errors = $_SESSION['errors'] ?? [];
 unset($_SESSION['errors']);
+
+$pageTitle = 'Configuracion';
+$galleryHref = '/u/' . $_SESSION['username'];
+$headerActions = [
+    ['href' => '/upload', 'label' => 'Subir foto', 'icon' => 'upload', 'visible' => true],
+    ['href' => '/settings', 'label' => 'Editar perfil', 'icon' => 'settings', 'visible' => true],
+    ['href' => '/search', 'label' => 'Buscar', 'icon' => 'search', 'visible' => true],
+    ['href' => '/logout', 'label' => 'Cerrar sesion', 'icon' => 'logout', 'visible' => true],
+];
+
+$avatarUrl = !empty($user['profile_image']) ? '/uploads/' . rawurlencode((string) $user['profile_image']) : null;
+$avatarText = htmlspecialchars(strtoupper(substr((string) ($user['username'] ?? ''), 0, 1) ?: '?'));
+
+require dirname(__DIR__) . '/partials/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head><meta charset="UTF-8"><title>Configuración</title></head>
-<body>
-    <h1>Configuración</h1>
-    <a href="/u/<?= $_SESSION['username'] ?>">← Volver al perfil</a>
-
-    <?php foreach ($errors as $e): ?>
-        <p style="color:red"><?= htmlspecialchars($e) ?></p>
-    <?php endforeach ?>
-
-    <!-- Editar perfil -->
-    <h2>Editar perfil</h2>
-    <form method="POST" action="/settings">
-        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-        <input type="hidden" name="action" value="profile">
-
-        <label>Usuario<br>
-            <input type="text" name="username" value="<?= htmlspecialchars($user['username'] ?? '') ?>" required>
-        </label><br><br>
-
-        <label>Nombre público<br>
-            <input type="text" name="display_name" value="<?= htmlspecialchars($user['display_name'] ?? '') ?>" maxlength="100" required>
-        </label><br><br>
-
-        <label>Bio<br>
-            <textarea name="bio" maxlength="160"><?= htmlspecialchars($user['bio'] ?? '') ?></textarea>
-        </label><br><br>
-
-        <button type="submit">Guardar cambios</button>
-    </form>
-
-    <hr>
-
-    <!-- Foto de perfil -->
-    <h2>Foto de perfil</h2>
-    <?php if ($user['profile_image']): ?>
-        <img src="/uploads/<?= htmlspecialchars($user['profile_image']) ?>"
-             style="width:80px;height:80px;object-fit:cover;border-radius:50%;">
-        <form method="POST" action="/settings">
-            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-            <input type="hidden" name="action" value="delete_profile_image">
-            <button type="submit">Eliminar foto de perfil</button>
-        </form>
-    <?php else: ?>
-        <div style="width:80px;height:80px;border-radius:50%;background:#ccc;
-                    display:flex;align-items:center;justify-content:center;
-                    font-size:2rem;font-weight:bold;">
-            <?= strtoupper($user['username'][0]) ?>
+<main class="page-main">
+    <?php if (!empty($errors)): ?>
+        <div class="alert-stack">
+            <?php foreach ($errors as $error): ?>
+                <p class="alert-message alert-message-error"><?= htmlspecialchars($error) ?></p>
+            <?php endforeach ?>
         </div>
     <?php endif ?>
 
-    <form method="POST" action="/settings" enctype="multipart/form-data">
-        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-        <input type="hidden" name="action" value="upload_profile_image">
-        <label>Nueva foto de perfil (máx. 2MB, JPG/PNG/WEBP)<br>
-            <input type="file" name="profile_image" accept="image/jpeg,image/png,image/webp" required>
-        </label><br><br>
-        <button type="submit">Subir foto de perfil</button>
-    </form>
+    <section class="surface-card">
+        <div class="surface-head">
+            <h1 class="surface-title">Configuracion</h1>
+            <p class="surface-copy">Edita usuario, nombre publico y bio.</p>
+        </div>
 
-    <hr>
+        <form class="form-stack" method="POST" action="/settings">
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+            <input type="hidden" name="action" value="profile">
 
-    <!-- Eliminar cuenta -->
-    <h2>Zona de peligro</h2>
-    <form method="POST" action="/settings"
-          onsubmit="return confirm('¿Seguro? Esta acción no se puede deshacer.')">
-        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-        <input type="hidden" name="action" value="delete_account">
-        <button type="submit" style="color:red">Eliminar mi cuenta</button>
-    </form>
-</body>
-</html>
+            <label class="field-group">
+                <span class="field-label">Usuario</span>
+                <input class="text-input" type="text" name="username" value="<?= htmlspecialchars((string) ($user['username'] ?? '')) ?>" required>
+            </label>
+
+            <label class="field-group">
+                <span class="field-label">Nombre publico</span>
+                <input class="text-input" type="text" name="display_name" value="<?= htmlspecialchars((string) ($user['display_name'] ?? '')) ?>" maxlength="100" required>
+            </label>
+
+            <label class="field-group">
+                <span class="field-label">Bio</span>
+                <textarea class="text-area" name="bio" maxlength="160"><?= htmlspecialchars((string) ($user['bio'] ?? '')) ?></textarea>
+            </label>
+
+            <button class="button button-primary" type="submit">Guardar cambios</button>
+        </form>
+    </section>
+
+    <section class="surface-card">
+        <div class="surface-head">
+            <h2 class="surface-title surface-title-small">Foto de perfil</h2>
+        </div>
+
+        <div class="settings-avatar-row">
+            <?php if ($avatarUrl): ?>
+                <img class="profile-avatar" src="<?= htmlspecialchars($avatarUrl) ?>" alt="Foto de perfil actual">
+            <?php else: ?>
+                <div class="profile-avatar profile-avatar-fallback" aria-hidden="true"><?= $avatarText ?></div>
+            <?php endif ?>
+
+            <?php if ($avatarUrl): ?>
+                <form method="POST" action="/settings">
+                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                    <input type="hidden" name="action" value="delete_profile_image">
+                    <button class="button button-secondary" type="submit">Eliminar foto de perfil</button>
+                </form>
+            <?php endif ?>
+        </div>
+
+        <form class="form-stack" method="POST" action="/settings" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+            <input type="hidden" name="action" value="upload_profile_image">
+
+            <label class="field-group">
+                <span class="field-label">Nueva foto de perfil</span>
+                <input class="text-input text-input-file" type="file" name="profile_image" accept="image/jpeg,image/png,image/webp" required>
+            </label>
+
+            <button class="button button-primary" type="submit">Subir foto de perfil</button>
+        </form>
+    </section>
+
+    <section class="surface-card surface-card-danger">
+        <div class="surface-head">
+            <h2 class="surface-title surface-title-small">Zona de peligro</h2>
+            <p class="surface-copy">Esta accion borra cuenta y fotos.</p>
+        </div>
+
+        <form method="POST" action="/settings" onsubmit="return confirm('Seguro? Esta accion no se puede deshacer.')">
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+            <input type="hidden" name="action" value="delete_account">
+            <button class="button button-danger" type="submit">Eliminar mi cuenta</button>
+        </form>
+    </section>
+</main>
+<?php require dirname(__DIR__) . '/partials/footer.php'; ?>

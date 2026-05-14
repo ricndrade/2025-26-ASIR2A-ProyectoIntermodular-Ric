@@ -42,8 +42,10 @@ $routes = [
         '/login'     => ['AuthController',    'login'],
         '/register'  => ['AuthController',    'register'],
         '/settings'  => ['SettingsController','update'],
-        '/foto/borrar'    => ['SettingsController','update'],  // reutiliza update con action=delete_photo
+        '/settings/borrar'    => ['SettingsController','update'],  // reutiliza update con action=delete_photo
         '/upload'    => ['UploadController', 'store'],
+        '/foto/borrar' => ['UploadController', 'destroy'],
+        '/foto/editar' => ['UploadController', 'editCaption'],
     ],
 ];
 

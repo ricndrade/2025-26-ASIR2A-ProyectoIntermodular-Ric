@@ -45,7 +45,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 INSERT INTO `users` (`id`, `username`, `display_name`, `email`, `password_hash`, `profile_image`, `bio`, `created_at`, `updated_at`) VALUES
-(1,	'Admin',	'admin',	'admin@museo.local',	'$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',	NULL,	NULL,	'2026-05-14 00:33:56',	'2026-05-14 00:33:56'),
-(3,	'ric',	'Ricardo',	'ric@example.com',	'$2y$10$248dGFMQ1R7EoeDFhJery.Vm0o32Ng1HRJsvDAD0UdQ1KPabCQzCu',	NULL,	'hola',	'2026-05-14 01:35:31',	'2026-05-14 01:36:15');
+(1,	'Admin',	'admin',	'admin@museo.local',	'$2y$10$7Uqj8L0VY08NP2s6KGudPOMY1FGxQWUEAW6aQXuX/LvfG/NaFxzf6',	NULL,	NULL,	'2026-05-14 00:33:56',	'2026-05-14 00:33:56'),
+(2,	'ric',	'Ricardo',	'ric@example.com',	'$2y$10$248dGFMQ1R7EoeDFhJery.Vm0o32Ng1HRJsvDAD0UdQ1KPabCQzCu',	NULL,	'hola',	'2026-05-14 01:35:31',	'2026-05-14 01:36:15');
 
 -- 2026-05-14 01:37:03 UTC

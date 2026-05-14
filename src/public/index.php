@@ -1,51 +1,55 @@
 <?php
 session_start();
-require_once __DIR__ . '/../config/database.php';
+define('ROOT_PATH', dirname(__DIR__));
 
-// En index.php, después de session_start():
+require_once ROOT_PATH . '/config/database.php';
+
+// Autoloader
+spl_autoload_register(function ($class) {
+    $file = ROOT_PATH . '/app/Controllers/' . $class . '.php';
+    if (file_exists($file)) require_once $file;
+});
+
+require_once ROOT_PATH . '/core/Auth.php';
+
+
+// CSRF token
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Autoloader simple
-spl_autoload_register(function ($class) {
-    $paths = [
-        __DIR__ . '/../app/controllers/' . $class . '.php',
-        __DIR__ . '/../app/models/' . $class . '.php',
-        __DIR__ . '/../core/' . $class . '.php',
-    ];
-    foreach ($paths as $path) {
-        if (file_exists($path)) {
-            require_once $path;
-            return;
-        }
-    }
-});
-
-// Router básico
 $uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
+// Rutas dinámicas /u/{username}
+if (preg_match('#^/u/([a-zA-Z0-9_]+)$#', $uri, $matches)) {
+    $controller = new ProfileController();
+    $controller->show($matches[1]);
+    exit;
+}
+
 $routes = [
-    'GET'  => [
-        '/'           => ['HomeController',  'index'],
-        '/login'      => ['AuthController',  'loginForm'],
-        '/logout'     => ['AuthController',  'logout'],
-        '/galeria'    => ['FotoController',  'index'],
-        '/foto/nueva' => ['FotoController',  'crearForm'],
+    'GET' => [
+        '/'          => ['HomeController',    'index'],
+        '/login'     => ['AuthController',    'loginForm'],
+        '/register'  => ['AuthController',    'registerForm'],
+        '/logout'    => ['AuthController',    'logout'],
+        '/settings'  => ['SettingsController','index'],
+        '/search'    => ['SearchController',  'index'],
     ],
     'POST' => [
-        '/login'      => ['AuthController',  'login'],
-        '/foto/nueva' => ['FotoController',  'crear'],
-        '/foto/borrar'=> ['FotoController',  'borrar'],
+        '/login'     => ['AuthController',    'login'],
+        '/register'  => ['AuthController',    'register'],
+        '/settings'  => ['SettingsController','update'],
+        '/foto/borrar'    => ['SettingsController','update'],  // reutiliza update con action=delete_photo
     ],
 ];
 
 $route = $routes[$method][$uri] ?? null;
 
 if ($route) {
-    [$controllerClass, $action] = $route;
-    $controller = new $controllerClass();
+    [$class, $action] = $route;
+    $controller = new $class();
     $controller->$action();
 } else {
     http_response_code(404);
